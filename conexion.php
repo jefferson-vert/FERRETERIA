@@ -1,12 +1,14 @@
 <?php
-$host="localhost";
-$user="root";
-$pass="jefferson142008";
-$db="ferreteria";
+$host = "localhost";
+$user = "root";
+$pass = "jefferson142008";
+$db   = "ferreteria";
 
-$conn = mysqli_connect($host,$user,$pass,$db);
+$conn = new mysqli($host, $user, $pass, $db);
 
-if(!$conn){
-    echo "Error de conexión";
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
 }
+
+$conn->set_charset("utf8");
 ?>
