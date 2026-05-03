@@ -1,3 +1,11 @@
+<?php
+$conexion = new mysqli("localhost", "root", "", "ferreteria");
+
+if ($conexion->connect_error) {
+    die("Error de conexión: " . $conexion->connect_error);
+}
+?>
+<?php include "navbar.php";?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -56,6 +64,43 @@
     window.addEventListener("load", function () {
         document.getElementById("bienvenida").classList.add("activa");
     });
+</script>
+<script>
+function agregarCarrito(id,nombre,precio,btn){
+
+fetch('carrito.php',{
+method:'POST',
+headers:{
+'Content-Type':'application/x-www-form-urlencoded',
+'X-Requested-With':'XMLHttpRequest'
+},
+body:`id=${id}&nombre=${encodeURIComponent(nombre)}&precio=${precio}`
+})
+.then(r => r.json())
+.then(data => {
+
+if(!data.success){
+alert("Sin stock disponible");
+return;
+}
+
+// 🔥 CONTADOR
+document.getElementById('cart-count').innerText = data.conteo;
+
+// 🔥 STOCK DINÁMICO
+let stockText = btn.parentElement.querySelector(".stock-text");
+
+if(data.stock <= 0){
+stockText.innerHTML="No disponible";
+stockText.classList.remove("text-success");
+stockText.classList.add("text-danger");
+btn.disabled=true;
+}else{
+stockText.innerHTML="Stock: "+data.stock;
+}
+
+});
+}
 </script>
 
 </body>

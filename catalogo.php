@@ -2,7 +2,7 @@
 session_start();
 
 /* CONEXIÓN */
-$conexion = new mysqli("localhost", "root", "jefferson142008", "ferreteria");
+$conexion = new mysqli("localhost", "root", "", "ferreteria");
 if ($conexion->connect_error) {
     die("Error de conexión");
 }

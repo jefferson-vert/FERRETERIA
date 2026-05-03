@@ -9,21 +9,31 @@ if(isset($_POST["entrar"])){
     $usuario = $_POST["usuario"];
     $clave   = $_POST["clave"];
 
-    $consulta = mysqli_query(
-        $conn,
-        "SELECT * FROM usuarios WHERE usuario='$usuario' OR email='$usuario'"
-    );
+    // 🔒 CONSULTA SEGURA
+    $stmt = $conn->prepare("SELECT * FROM usuarios WHERE usuario = ? OR email = ?");
+    $stmt->bind_param("ss", $usuario, $usuario);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
 
-    if(mysqli_num_rows($consulta) > 0){
+    if($resultado->num_rows > 0){
 
-        $fila = mysqli_fetch_assoc($consulta);
+        $fila = $resultado->fetch_assoc();
 
         if(password_verify($clave, $fila["clave"])){
 
-            $_SESSION["user"]   = $fila["usuario"];
+            // 🔥 SESIÓN COMPLETA
+            $_SESSION["user_id"] = $fila["id"];
+            $_SESSION["user"] = $fila["usuario"];
             $_SESSION["nombre"] = $fila["nombre"];
+            $_SESSION["usuario_email"] = $fila["email"];
+            $_SESSION["rol"] = $fila["rol"];
 
-            header("Location: panel.php");
+            if($fila["rol"] === "admin"){
+                header("Location: admin_panel.php");
+            } else {
+                header("Location: panel.php");
+            }
+
             exit;
 
         } else {
@@ -44,19 +54,19 @@ if(isset($_POST["entrar"])){
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-    .form-control,
-    .btn {
-        border-radius: 0;
-    }
+.form-control,
+.btn {
+    border-radius: 0;
+}
 
-    .form-control:focus {
-        box-shadow: none;
-        border-color: #495057;
-    }
+.form-control:focus {
+    box-shadow: none;
+    border-color: #495057;
+}
 
-    .btn:focus {
-        box-shadow: none;
-    }
+.btn:focus {
+    box-shadow: none;
+}
 </style>
 </head>
 
@@ -69,16 +79,21 @@ if(isset($_POST["entrar"])){
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-5">
 
-                    <form method="POST">
+                    <!-- 🔥 FORM SIN AUTOCOMPLETE -->
+                    <form method="POST" autocomplete="off">
+
+                        <!-- 🔥 CAMPOS FALSOS (ANTI AUTOFILL) -->
+                        <input type="text" style="display:none">
+                        <input type="password" style="display:none">
 
                         <div class="mb-4">
                             <label class="form-label text-muted fs-6">Usuario o Email</label>
-                            <input type="text" name="usuario" class="form-control py-2 fs-6" required>
+                            <input type="text" name="usuario" class="form-control py-2 fs-6" autocomplete="username" required>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label text-muted fs-6">Contraseña</label>
-                            <input type="password" name="clave" class="form-control py-2 fs-6" required>
+                            <input type="password" name="clave" class="form-control py-2 fs-6" autocomplete="new-password" required>
                         </div>
 
                         <button class="btn btn-dark w-100 py-2 fs-6" name="entrar">
@@ -103,6 +118,14 @@ if(isset($_POST["entrar"])){
         </div>
     </div>
 </div>
+
+<!-- 🔥 LIMPIAR CAMPOS AL CARGAR -->
+<script>
+window.onload = function () {
+    document.querySelector("input[name='usuario']").value = "";
+    document.querySelector("input[name='clave']").value = "";
+};
+</script>
 
 </body>
 </html>
