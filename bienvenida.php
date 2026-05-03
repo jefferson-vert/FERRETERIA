@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 $conexion = new mysqli("localhost", "root", "", "ferreteria");
 
@@ -6,6 +7,8 @@ if ($conexion->connect_error) {
 }
 ?>
 <?php include "navbar.php";?>
+=======
+>>>>>>> 7b1c71085b56f02a0453679365b833e69f090ddd
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -65,6 +68,7 @@ if ($conexion->connect_error) {
         document.getElementById("bienvenida").classList.add("activa");
     });
 </script>
+<<<<<<< HEAD
 <script>
 function agregarCarrito(id,nombre,precio,btn){
 
@@ -102,6 +106,8 @@ stockText.innerHTML="Stock: "+data.stock;
 });
 }
 </script>
+=======
+>>>>>>> 7b1c71085b56f02a0453679365b833e69f090ddd
 
 </body>
 </html>
